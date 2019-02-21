@@ -35,7 +35,7 @@ let update x v s = fun y -> if x = y then v else s y
 (* An example of a non-trivial state: *)                                                   
 let s = update "x" 1 @@ update "y" 2 @@ update "z" 3 @@ update "t" 4 empty
 
-(* Some testing; comment this definition out when submitting the solution. *)
+(* Some testing; comment this definition out when submitting the solution. 
 let _ =
   List.iter
     (fun x ->
@@ -51,4 +51,27 @@ let _ =
    the given state.
 *)
 let eval = failwith "Not implemented yet"
-                    
+ *)                   
+
+let operation arg left right = 
+  match arg with
+  | "+"  -> left + right
+  | "-"  -> left - right
+  | "*"  -> left * right
+  | "/"  -> left / right
+  | "%"  -> left mod right
+  | ">"  -> if (left > right) then 1 else 0 
+  | "<"  -> if (left < right) then 1 else 0 
+  | "==" -> if (left = right) then 1 else 0
+  | ">=" -> if (left >= right) then 1 else 0 
+  | "<=" -> if (left <= right) then 1 else 0 
+  | "!=" -> if (left != right) then 1 else 0 
+  | "!!" -> if (left != 0 || right != 0) then 1 else 0 
+  | "&&" -> if (left != 0 && right != 0) then 1 else 0 
+
+  
+let rec eval stat expr = 
+  match expr with
+  | Const numb -> numb
+  | Var f -> stat f
+  | Binop (arg, left, right) -> operation arg (eval stat left) (eval stat right)
