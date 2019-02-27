@@ -41,7 +41,29 @@ module Expr =
        Takes a state and an expression, and returns the value of the expression in 
        the given state.
     *)
-    let eval _ = failwith "Not implemented yet"
+let operation arg left right = 
+  match arg with
+  | "+"  -> left + right
+  | "-"  -> left - right
+  | "*"  -> left * right
+  | "/"  -> left / right
+  | "%"  -> left mod right
+  | ">"  -> if (left > right) then 1 else 0 
+  | "<"  -> if (left < right) then 1 else 0 
+  | "==" -> if (left = right) then 1 else 0
+  | ">=" -> if (left >= right) then 1 else 0 
+  | "<=" -> if (left <= right) then 1 else 0 
+  | "!=" -> if (left != right) then 1 else 0 
+  | "!!" -> if (left != 0 || right != 0) then 1 else 0 
+  | "&&" -> if (left != 0 && right != 0) then 1 else 0 
+
+  
+let rec eval stat expr = 
+  match expr with
+  | Const numb -> numb
+  | Var f -> stat f
+  | Binop (arg, left, right) -> operation arg (eval stat left) (eval stat right)
+
 
   end
                     
@@ -65,7 +87,23 @@ module Stmt =
 
        Takes a configuration and a statement, and returns another configuration
     *)
-    let eval _ = failwith "Not implemented yet"
+      let rec eval config stmt =
+        let (state, istream, ostream) = config in
+        match stmt with
+        | Read var -> (
+            match istream with
+            | input::istream ->
+                let state = Expr.update var input state in
+                (state, istream, ostream)
+            | [] -> failwith "Empty input stream")
+        | Write expr ->
+            let output = Expr.eval state expr in
+            (state, istream, ostream @ [output])
+        | Assign (var, expr) ->
+            let res = Expr.eval state expr in
+            (Expr.update var res state, istream, ostream)
+        | Seq (l, r) ->
+            eval (eval config l) r
                                                          
   end
 
