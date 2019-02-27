@@ -32,7 +32,7 @@ let eval config code =
             eval' (match instruction with
                 | BINOP op ->
                     let l::r::stack' = stack in
-                    ((Syntax.Expr.eval_binop op l r)::stack', (state, istream, ostream))
+                    ((Syntax.Expr.operation op l r)::stack', (state, istream, ostream))
                 | CONST const ->
                     (const::stack, (state, istream, ostream))
                 | READ ->
