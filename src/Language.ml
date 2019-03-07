@@ -120,7 +120,7 @@ module Stmt =
 		| Read variable_name -> (match istream with
 			  | head::tail -> (Expr.update variable_name head state, tail, ostream))
            
-		| Write expr -> (state, istream, ostream @ [Expr.eval state exp])
+		| Write expr -> (state, istream, ostream @ [Expr.eval state expr])
       
 		| Assign (variable_name, exp) -> (Expr.update variable_name (Expr.eval state exp) state, istream, ostream)
       
