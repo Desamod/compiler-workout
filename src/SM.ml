@@ -24,7 +24,24 @@ type config = int list * Stmt.config
 
    Takes a configuration and a program, and returns a configuration as a result
  *)                         
-let eval _ = failwith "Not yet implemented"
+ let eval_config config insn =
+	let (stack, st_cfg) = config in
+	let (state, istream, ostream) = st_cfg in match insn with
+	    | BINOP operator -> (match stack with
+		    | y::x::tail -> ([(Language.Expr.operation operator) x y] @ tail, st_cfg))
+
+           | CONST value -> ([value] @ stack, st_cfg)
+
+	    | READ -> (match istream with
+		    | head::tail -> ([head] @ stack, (state, tail, ostream)))
+	    | WRITE -> (match stack with
+		    | head::tail -> (tail, (state, istream, ostream @ [head])))
+
+	    | LD  var -> ([state var] @ stack, st_cfg)
+	    | ST  var -> (match stack with
+		    | head::tail -> (tail, (Language.Expr.update var head state, istream, ostream)))
+ 
+let eval config prg = List.fold_left eval_config config prg
 
 (* Top-level evaluation
 
@@ -41,4 +58,13 @@ let run p i = let (_, (_, _, o)) = eval ([], (Language.Expr.empty, i, [])) p in 
    Takes a program in the source language and returns an equivalent program for the
    stack machine
  *)
-let compile _ = failwith "Not yet implemented"
+let rec compile_expr expr = match expr with
+       | Language.Expr.Const  const         -> [CONST const]
+       | Language.Expr.Var    var         -> [LD var]
+       | Language.Expr.Binop (op, l, r) -> (comp_expression l) @ (comp_expression r) @ [BINOP op]
+
+let rec compile stmt = match stmt with
+       | Language.Stmt.Read    var       -> [READ; ST var]
+       | Language.Stmt.Write   expr       -> (compile_expr expr) @ [WRITE]
+       | Language.Stmt.Assign (var, expr)   -> (compile_expr expr @ [ST var]
+       | Language.Stmt.Seq    (l, r) -> (compile l) @ (compile r)
