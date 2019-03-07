@@ -66,5 +66,5 @@ let rec compile_expr expr = match expr with
 let rec compile stmt = match stmt with
        | Language.Stmt.Read    var       -> [READ; ST var]
        | Language.Stmt.Write   expr       -> (compile_expr expr) @ [WRITE]
-       | Language.Stmt.Assign (var, expr)   -> (compile_expr expr @ [ST var]
+       | Language.Stmt.Assign (var, expr)   -> (compile_expr expr) @ [ST var]
        | Language.Stmt.Seq    (l, r) -> (compile l) @ (compile r)
