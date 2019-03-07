@@ -116,8 +116,7 @@ module Stmt =
        Takes a configuration and a statement, and returns another configuration
     *)
    let rec eval config stmt = 
-	let (state, istream, ostream) = config in 
-      match stmt with
+	let (state, istream, ostream) = config in match stmt with
 		| Read variable_name -> (match istream with
 			  | head::tail -> (Expr.update variable_name head state, tail, ostream))
            
