@@ -114,7 +114,11 @@ module Stmt =
 
     (* The type of configuration: a state, an input stream, an output stream *)
     type config = Expr.state * int list * int list
-
+    
+    let headtotail t m = match t with
+        | head::tail -> (head, tail)
+        | _ -> failwith(m)
+    let circ c = Expr.Binop ("==", c, Expr.Const 0)
     (* Statement evaluator
 
          val eval : config -> t -> config
