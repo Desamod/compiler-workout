@@ -133,17 +133,15 @@ module Stmt =
   struct
 
     (* The type for statements *)
-    @type t =
-    (* read into the variable           *) | Read   of string
-    (* write the value of an expression *) | Write  of Expr.t
-    (* assignment                       *) | Assign of string * Expr.t
-    (* composition                      *) | Seq    of t * t
+    type t =
+    (* assignment                       *) | Assign of string * Expr.t list * Expr.t
+    (* composition                      *) | Seq    of t * t 
     (* empty statement                  *) | Skip
     (* conditional                      *) | If     of Expr.t * t * t
     (* loop with a pre-condition        *) | While  of Expr.t * t
-    (* loop with a post-condition       *) | Repeat of Expr.t * t
-    (* return  statement                *) | Return of Expr.t option
-    (* call a procedure                 *) | Call   of string * Expr.t list with show
+    (* loop with a post-condition       *) | Repeat of t * Expr.t
+    (* return statement                 *) | Return of Expr.t option
+    (* call a procedure                 *) | Call   of string * Expr.t list
 
     (* Statement evaluator
          val eval : env -> config -> t -> config
