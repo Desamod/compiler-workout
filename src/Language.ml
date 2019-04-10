@@ -148,7 +148,10 @@ module Stmt =
        Takes an environment, a configuration and a statement, and returns another configuration. The
        environment is the same as for expressions
      *)
-
+    let hd_tl l msg = match l with
+        | head::tail -> (head, tail)
+        | _ -> failwith(msg)
+        
     let rec eval env ((st, i, o, r) as conf) k stmt =
       let meta k s =
         match k with
